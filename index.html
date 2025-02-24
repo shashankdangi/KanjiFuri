@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Rich Text Editor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .toolbar {
+        margin-bottom: 10px;
+      }
+      button {
+        padding: 8px;
+        margin-right: 5px;
+        cursor: pointer;
+      }
+      .text {
+        border: 1px solid #ccc;
+      }
+      #editor {
+        min-height: 200px;
+        font-size: 16px;
+        padding: 10px;
+        max-width: 100%;
+        outline: none;
+        word-wrap: break-word;
+        white-space: normal;
+      }
+
+      /* Add Noto Sans Japanese font */
+      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap");
+      body {
+        font-family: "Noto Sans JP", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toolbar">
+      <button onclick="execCmd('bold')">Bold</button>
+      <button onclick="execCmd('italic')">Italic</button>
+      <button onclick="execCmd('underline')">Underline</button>
+      <button onclick="execCmd('insertOrderedList')">Numbered List</button>
+      <button onclick="execCmd('insertUnorderedList')">Bullet List</button>
+      <button onclick="execCmd('createLink', prompt('Enter URL:'))">
+        Insert Link
+      </button>
+      <button onclick="execCmd('removeFormat')">Remove Formatting</button>
+      <button onclick="addFurigana()">Add Furigana</button>
+      <button id="download-btn">Download PDF</button>
+    </div>
+    <div class="text">
+      <div id="editor" contenteditable="true"></div>
+    </div>
+
+    <script>
+      function execCmd(command, value = null) {
+        document.execCommand(command, false, value);
+      }
+
+      function addFurigana() {
+        let selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        let range = selection.getRangeAt(0);
+        let selectedText = range.toString();
+        if (!selectedText) return;
+
+        let furigana = prompt("Enter Furigana:");
+        if (!furigana) return;
+
+        let rubyElement = document.createElement("ruby");
+        let rtElement = document.createElement("rt");
+
+        rubyElement.textContent = selectedText;
+        rtElement.textContent = furigana;
+
+        rubyElement.appendChild(rtElement);
+
+        range.deleteContents();
+        range.insertNode(rubyElement);
+      }
+
+      document.addEventListener("keydown", function (event) {
+        if (event.ctrlKey && event.key === "f") {
+          event.preventDefault(); // Prevent the default browser action (Find functionality)
+          addFurigana(); // Trigger the addFurigana function
+        }
+      });
+
+      // Download text as PDF while keeping formatting
+      document
+        .getElementById("download-btn")
+        .addEventListener("click", function () {
+          const editor = document.getElementById("editor");
+
+          // Use html2pdf to directly convert content
+          html2pdf()
+            .from(editor)
+            .set({
+              filename: "document.pdf",
+              margin: [10, 10, 10, 10],
+              html2canvas: {
+                scale: 3,
+                useCORS: true,
+              },
+              jsPDF: {
+                unit: "mm",
+                format: "a4",
+                orientation: "portrait",
+                precision: "high", // Improve rendering precision for Japanese characters
+              },
+            })
+            .save();
+        });
+    </script>
+  </body>
+</html>
