@@ -4,61 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simple Rich Text Editor</title>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
-
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
-      .toolbar {
-        margin-bottom: 10px;
-      }
-      button {
-        padding: 8px;
-        margin-right: 5px;
-        cursor: pointer;
-      }
-      .text {
-        border: 1px solid #ccc;
-      }
-      #editor {
-        min-height: 200px;
-        font-size: 16px;
-        padding: 10px;
-        max-width: 100%;
-        outline: none;
-        word-wrap: break-word;
-        white-space: normal;
-      }
-
-      /* Add Noto Sans Japanese font */
-      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap");
-      body {
-        font-family: "Noto Sans JP", sans-serif;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <h1>KanjiFuri</h1>
     <div class="toolbar">
-      <button onclick="execCmd('bold')">Bold</button>
-      <button onclick="execCmd('italic')">Italic</button>
-      <button onclick="execCmd('underline')">Underline</button>
-      <button onclick="execCmd('insertOrderedList')">Numbered List</button>
-      <button onclick="execCmd('insertUnorderedList')">Bullet List</button>
-      <button onclick="execCmd('createLink', prompt('Enter URL:'))">
-        Insert Link
-      </button>
-      <button onclick="execCmd('removeFormat')">Remove Formatting</button>
-      <button onclick="addFurigana()">Add Furigana</button>
-      <button id="download-btn">Download PDF</button>
+      <div>
+        <button class="toggle-btn" onclick="execCmd('bold')">B</button>
+        <button class="toggle-btn" onclick="execCmd('italic')">I</button>
+        <button class="toggle-btn" onclick="execCmd('underline')">U</button>
+      </div>
+
+      <div class="speacial-btns">
+        <button class="btn" onclick="addFurigana()">Add Furigana</button>
+        <button class="btn" id="download-btn">Download PDF</button>
+      </div>
     </div>
-    <div class="text">
-      <div id="editor" contenteditable="true"></div>
-    </div>
+    <div class="editor" id="editor" contenteditable="true"></div>
 
     <script>
       function execCmd(command, value = null) {
@@ -101,6 +68,14 @@
         .addEventListener("click", function () {
           const editor = document.getElementById("editor");
 
+          if (!editor.innerHTML.trim()) {
+            alert("Please enter some text to download");
+            return;
+          }
+
+          const originalColor = editor.style.color;
+
+          editor.style.color = "black"; // Set text color to black for better readability in the PDF
           // Use html2pdf to directly convert content
           html2pdf()
             .from(editor)
@@ -118,8 +93,20 @@
                 precision: "high", // Improve rendering precision for Japanese characters
               },
             })
-            .save();
+            .save()
+            .then(() => {
+              editor.style.color = originalColor; // Reset the text color
+            });
         });
     </script>
+    <footer>
+      <p>
+        Made with 💖 by
+        <a href="http://shashankdangi.github.io" target="_blank"
+          >Shashank Dangi
+        </a>
+        &copy; 2025
+      </p>
+    </footer>
   </body>
 </html>
