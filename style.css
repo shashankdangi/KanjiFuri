@@ -8,7 +8,8 @@
   -webkit-user-select: none; /* Disable text selection in WebKit-based browsers (Safari, Chrome) */
   -moz-user-select: none; /* Disable text selection in Firefox */
   -ms-user-select: none; /* Disable text selection in Internet Explorer/Edge */
-  user-select: none; /* Standard syntax for modern browsers */
+  user-select: none;
+  -webkit-touch-callout: none; /* Standard syntax for modern browsers */
 }
 
 body {
