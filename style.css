@@ -35,6 +35,17 @@ h1 {
   border-radius: 5px;
   max-width: 900px;
 }
+
+@media (max-width: 500px) {
+  .toggle-btn {
+    border: 1px solid white;
+  }
+  .toolbar {
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+}
 button {
   padding: 8px;
   margin-right: 5px;
@@ -54,6 +65,10 @@ button {
   border-radius: 5px;
   max-width: 900px;
   user-select: none;
+  -webkit-user-select: none; /* Disable text selection in WebKit-based browsers (Safari, Chrome) */
+  -moz-user-select: none; /* Disable text selection in Firefox */
+  -ms-user-select: none; /* Disable text selection in Internet Explorer/Edge */
+  user-select: none;
 }
 
 .toggle-btn {
@@ -61,7 +76,7 @@ button {
   min-width: 40px;
   min-height: 40px;
   color: white;
-  border: 0;
+
   cursor: pointer;
   transition: ease-in-out 0.2s;
   border-radius: 10px;
